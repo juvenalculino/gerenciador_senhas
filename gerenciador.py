@@ -4,6 +4,7 @@
 from time import sleep
 from random import choice
 import os
+import base64
 
 # Funções de Banners e cores
 
@@ -70,16 +71,16 @@ def buscar_site(sites):
     try:
         print('site:'.rjust(6), sites)
         print('email:', gerenciador[sites]['email'])
-        print('senha:', gerenciador[sites]['senha'])
+       #print('senha:', gerenciador[sites]['senha'])
 
        #Aqui tem a opção de mostrar as senhas criptografadas em base64
-       #Só precisa comentar o codigo acima e descomentar o código abaixo.
-       #sen = 'senha:', gerenciador[sites]['senha']
-       #sen1 = sen[1]
-       #men_bytes = sen1.encode('ascii')
-       #b64_bytes = base64.b64encode(men_bytes)
-       #base64_men = b64_bytes.decode('ascii')
-       # print('senha:',base64_men)
+       #Só precisa deccomentar o codigo acima e comentar o código abaixo.
+       sen = 'senha:', gerenciador[sites]['senha']
+       sen1 = sen[1]
+       men_bytes = sen1.encode('ascii')
+       b64_bytes = base64.b64encode(men_bytes)
+       base64_men = b64_bytes.decode('ascii')
+       print('senha:',base64_men)
 
         print('url:'.rjust(6), gerenciador[sites]['url'])
         print('~'*25)
