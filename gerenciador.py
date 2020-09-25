@@ -4,8 +4,7 @@
 from time import sleep
 from random import choice
 import os
-import string
-import base64
+
 # Funções de Banners e cores
 
 def clr():
