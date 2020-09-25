@@ -71,17 +71,7 @@ def buscar_site(sites):
     try:
         print('site:'.rjust(6), sites)
         print('email:', gerenciador[sites]['email'])
-        #print('senha:', gerenciador[sites]['senha'])
-
-        #Aqui tem a opção de mostrar as senhas criptografadas e descriptografadas em base64
-        #Só precisa descomentar o codigo acima e comentar o código base64 abaixo.
-        sen = 'senha:', gerenciador[sites]['senha']
-        sen1 = sen[1]
-        men_bytes = sen1.encode('ascii')
-        b64_bytes = base64.b64encode(men_bytes)
-        base64_men = b64_bytes.decode('ascii')
-        print('senha:',base64_men)
-
+        print('senha:', gerenciador[sites]['senha'])
         print('url:'.rjust(6), gerenciador[sites]['url'])
         print('~'*25)
     except KeyError:
