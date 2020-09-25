@@ -4,7 +4,6 @@
 from time import sleep
 from random import choice
 import os
-import base64
 
 # Funções de Banners e cores
 
