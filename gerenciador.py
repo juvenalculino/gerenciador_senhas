@@ -110,6 +110,7 @@ def incluir_editar_site(sites, email, senha, url):
     print(f'Site {sites} Adicionado...')
     print()
 
+    
 
 def excluir_site(sites):
     try:
