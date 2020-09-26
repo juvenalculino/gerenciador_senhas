@@ -1,9 +1,15 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Gerenciador de senhas by: Juvenal Cullyno
+
+# Deixem os créditos:
+# Juvenal Culino | Facebook: https://www.facebook.com/jose.juvenal.00
+#                | Github: https://github.com/juvenalculino
+
 from time import sleep
 from random import choice
 import os
+import base64
 
 # Funções de Banners e cores
 
@@ -25,7 +31,7 @@ def banner():
  \___|\___||_|  \___||_||_|\__||_|\__,_|\__,_|\___/|_|                                                                
                                          """
     print()
-    print(choice(cores),'By: Juvenal Cullyno', W)
+    print(choice(cores),'By: Juvenal Culino', W)
     print(choice(cores) + logo + W)
 
 
@@ -71,6 +77,16 @@ def buscar_site(sites):
         print('site:'.rjust(6), sites)
         print('email:', gerenciador[sites]['email'])
         print('senha:', gerenciador[sites]['senha'])
+        
+       #Aqui tem a opção de mostrar as senhas criptografadas em base64
+       #Só precisa comentar o codigo acima e descomentar o código abaixo.
+        
+       #sen = 'senha:', gerenciador[sites]['senha']
+       #sen1 = sen[1]
+       #men_bytes = sen1.encode('ascii')
+       #b64_bytes = base64.b64encode(men_bytes)
+       #base64_men = b64_bytes.decode('ascii')
+       #print('senha:',base64_men)
         print('url:'.rjust(6), gerenciador[sites]['url'])
         print('~'*25)
     except KeyError:
