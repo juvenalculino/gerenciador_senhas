@@ -1,255 +1,302 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Gerenciador de senhas by: Juvenal Cullyno
-
 # Deixem os créditos:
 # Juvenal Culino | Facebook: https://www.facebook.com/jose.juvenal.00
 #                | Github: https://github.com/juvenalculino
-
+import base64
+import os
 from time import sleep
 from random import choice
-import os
-import base64
 
-# Funções de Banners e cores
+gerenciador = {}
+azul = '\033[1;34m'
+verm = '\033[1;31m'
+preto = '\033[1;30m'
+cyanfun = '\033[1;106m'
+reset = '\033[0;0m'
+cores = ('\033[1;31m', '\033[1;32m', '\033[1;33m', '\033[1;34m', '\033[1;35m', '\033[1;36m')
 
-def clr():
+
+def banner():
+    """
+    Aqui é apenas o banner do script
+    :return: Retorna o logo personalizado
+    """
+    logo = """
+  ___                           _           _
+ / __| ___  _ _  ___  _ _   __ (_) __ _  __| | ___  _ _
+| (_ |/ -_)| '_|/ -_)| ' \ / _|| |/ _` |/ _` |/ _ \| '_|
+ \___|\___||_|  \___||_||_|\__||_|\__,_|\__,_|\___/|_|
+                                  """
+    print()
+    print(choice(cores), 'By: Juvenal Culino', reset)
+    print(choice(cores) + logo + reset)
+
+
+# Menu
+banner()
+
+
+def menu():
+    """
+    Função que retorna o menu de opções.
+    :return: menu com as opções
+    """
+    print(f'{preto}=={reset}' * 28)
+    print(f'{preto}Seja bem vindo(a){reset}'.rjust(34))
+    print('''{}
+    {}Escolha a opção:{}
+    [1] Mostrar Dados
+    [2] Buscar Site
+    [3] Incluir site/senha
+    [4] Excluir
+    [5] Exportar para csv
+    [6] Importar csv
+    \n    [0] Sair{}'''.format(choice(cores), choice(cores), choice(cores), reset))
+    print(f'{preto}=={reset}' * 28)
+    option = input(f'{choice(cores)}\n=>> {reset}')
+    executar_menu(option)
+    return
+
+
+def executar_menu(option):
+    """
+    Funcionalidade para o menu de opções
+    :param option: limpeza da tela em sistemas posix e so
+    :return: Retorna o loop do menu e limpeza da tela cls em sist. win e clear em linux.
+    """
     if os.name == 'nt':
         os.system('cls')
     else:
         os.system('clear')
+    ch = option.lower()
+    if ch == '':
+        menu_action['menu']()
+    else:
+        try:
+            menu_action[ch]()
+        except KeyError:
+            print(f'{verm}Opção inválida, Tente novamente{reset}')
+            menu_action['menu']()
+    return
 
-
-
-def banner():
-
-    #clr()
-    logo="""
-  ___                           _           _             
- / __| ___  _ _  ___  _ _   __ (_) __ _  __| | ___  _ _ 
-| (_ |/ -_)| '_|/ -_)| ' \ / _|| |/ _` |/ _` |/ _ \| '_|
- \___|\___||_|  \___||_||_|\__||_|\__,_|\__,_|\___/|_|                                                                
-                                         """
-    print()
-    print(choice(cores),'By: Juvenal Culino', W)
-    print(choice(cores) + logo + W)
-
-
-
-cores = ['\033[1;31m','\033[1;32m','\033[1;33m','\033[1;34m','\033[1;35m','\033[1;36m']
-W = '\033[0m'
-
-
-def imprimir():
-    print('\033[1;m','=='*28,'\033[0m')
-    print(choice(cores))
-    print('''
-    [ 1 ] Mostrar todas as senhas
-    [ 2 ] Buscar site
-    [ 3 ] Incluir Site
-    [ 4 ] Editar Site
-    [ 5 ] Excluir site
-    [ 6 ] Exportar sites
-    [ 7 ] Importar sites para csv
-    [ 0 ] Fechar Gerenciador''')
-    print()
-    print('\033[1;m','=='*28,'\033[0m')
-#-----------------------------------------------------------------
-gerenciador = {}
 
 # Funções
-
 def mostrar_site():
-    clr()
-    banner()
+    """
+    Retorna todos os sites.
+    :return: Retorna os dados salvos no gerenciador or no arquivo salvo 'senhas.csv'
+    """
     if len(gerenciador) > 0:
-        for sites in gerenciador:
-            buscar_site(sites)
-        print(f'Total: {len(gerenciador)}')
+        try:
+            sim = input(f"{verm}Deseja ver as senhas criptografadas em base64?{reset} [s|n]: ")
+            for sites in gerenciador:
+                if sim == 's'.lower():
+                    print(f'{choice(cores)}--------------------------------')
+                    print('site:'.rjust(6), sites)
+                    print('email:', gerenciador[sites]['email'])
+                    sen = 'senha:', gerenciador[sites]['senha']
+                    sen1 = sen[1]
+                    men_bytes = sen1.encode('ascii')
+                    b64_bytes = base64.b64encode(men_bytes)
+                    base64_men = b64_bytes.decode('ascii')
+                    print('senha:', base64_men)
+                    print('url:'.rjust(6), gerenciador[sites]['url'])
+                    print(f'--------------------------------{reset}')
+                else:
+                    print(f'{choice(cores)}--------------------------------')
+                    print('site:'.rjust(6), sites)
+                    print('email:', gerenciador[sites]['email'])
+                    print('senha:', gerenciador[sites]['senha'])
+                    print('url:'.rjust(6), gerenciador[sites]['url'])
+                    print(f'--------------------------------{reset}')
+        except KeyError:
+            print(f'{verm}Lista vazia...{reset}')
+    menu()
+
+
+def buscar_site():
+    """
+    Busca com nome específico do site salvo no arquivo 'senhas.csv'.
+    :return: Retorna o nome específico caso contrário retorna o KeyError.
+    Temos a opção de visualizar os arquivos criptografados em base64, basta comentar a linha 85 -> senha,
+    e descomentar as linhas 88 à 93.
+    """
+    sites = input(f'{cyanfun}Digite o nome do site:{reset} ')
+    print()
+    try:
+        sim = input(f"{verm}Deseja ver as senhas criptografadas em base64?{reset} [s|n]: ")
+        if sim == 's':
+            print(f'{choice(cores)}--------------------------------')
+            sen = 'senha:', gerenciador[sites]['senha']
+            sen1 = sen[1]
+            men_bytes = sen1.encode('ascii')
+            b64_bytes = base64.b64encode(men_bytes)
+            base64_men = b64_bytes.decode('ascii')
+            print('site:'.rjust(6), sites)
+            print('email:', gerenciador[sites]['email'])
+            print('url:'.rjust(6), gerenciador[sites]['url'])
+            print('senha:', base64_men)
+            print(f'--------------------------------{reset}')
+        else:
+            print(f'{choice(cores)}--------------------------------')
+            print('site:'.rjust(6), sites)
+            print('email:', gerenciador[sites]['email'])
+            print('senha:', gerenciador[sites]['senha'])
+            print('url:'.rjust(6), gerenciador[sites]['url'])
+            print(f'--------------------------------{reset}')
+
+    except KeyError:
+        print(f'{verm}Nome não encontrado...{reset}')
+
+    except Exception as erro:
+        print(f'{verm}>>> Erro: {erro} <<<{reset}')
+    menu()
+
+
+def incluir_editar_site():
+    """
+    Está função tem como funcionalidade inserir site, email, senha e url.
+    :return: Recebe entrada de dados em conjunto com a função exportar, no qual tem a opção de salvar os dados.
+    """
+    sites = input(f'{cyanfun}Informe o nome do site: {reset}')
+    if len(sites) < 3:
+        print(f'{verm}\nErro. Informe o nome do site.{reset}\n')
+    if sites in gerenciador is not True:
+        print(f'{azul}Site existe...{reset}')
     else:
-        print('Lista vazia...')
-
-
-
-def buscar_site(sites):
-
-    try:
-        print('site:'.rjust(6), sites)
-        print('email:', gerenciador[sites]['email'])
-        print('senha:', gerenciador[sites]['senha'])
-        
-       #Aqui tem a opção de mostrar as senhas criptografadas em base64
-       #Só precisa comentar o codigo acima e descomentar o código abaixo.
-        
-       #sen = 'senha:', gerenciador[sites]['senha']
-       #sen1 = sen[1]
-       #men_bytes = sen1.encode('ascii')
-       #b64_bytes = base64.b64encode(men_bytes)
-       #base64_men = b64_bytes.decode('ascii')
-       #print('senha:',base64_men)
-        print('url:'.rjust(6), gerenciador[sites]['url'])
-        print('~'*25)
-    except KeyError:
-        print('Site Inexistente')
-    except Exception as erro:
-        print('>>> Erro Inesperado <<<')
-        print(erro)
-
-
-
-def ler_detalhes_site():
-    email = input('Digite o email/usuário: ')
-    senha = input('Digite a senha: ')
-    url = input('Digite a url do site: ')
-    return  email, senha, url
-
-
-
-def incluir_editar_site(sites, email, senha, url):
-    gerenciador[sites] = {
-        'email': email,
-        'senha': senha,
-        'url': url
-    }
-    salvar()
-    print()
-    print(f'Site {sites} Adicionado...')
-    print()
-
-    
-
-def excluir_site(sites):
-    try:
-        gerenciador.pop(sites)
+        email = input(f'{cyanfun}Digite o email:{reset} ')
+        senha = input(f'{cyanfun}Digite a senha:{reset} ')
+        url = input(f'{cyanfun}Digite a url: {reset}')
+        gerenciador[sites] = {'email': email, 'senha': senha, 'url': url}
+        salvar()
         print()
-        print(f'Contato {sites} excluido com sucesso...')
-    except KeyError:
-        print('Site Inexistente...')
-    except Exception as erro:
-        print('Ocorreu algum erro')
-        print(erro)
+        print(f'{azul}Site {sites} Adicionado...{reset}')
+        print()
+    menu()
 
 
-
-def exportar_site(nome_arquivo):
+def excluir_site():
+    """
+    Exclui o site caso exista se não existir retorna erro.
+    :return: Retorna o input para o utilizador digitar o nome do site a ser excluido.
+    """
     try:
-        with open(nome_arquivo, 'w') as arquivo:
+        sites = input(f'{verm}Digite o nome do site a excluir:{reset} ')
+        gerenciador.pop(sites)
+        if len(sites) == 0:
+            print(f'{verm}ERRO! digite o nome do site{reset}')
+        else:
+            print(f'{azul}Site {sites} Removido..{reset}')
+
+    except Exception as erro:
+        print(f'{verm}erro: {erro} {reset}')
+    menu()
+
+
+def exportar_site():
+    """
+    Funcionalidade para exportar os dados para um arquivo csv.
+    :return: Retorna um input para o utilizador digitar o nome desejado da saída do arquivo .csv
+    """
+    try:
+        a = input(f'{cyanfun}Deseja salvar {reset}[s|n]').lower()
+        if a == 's':
+            b = input(f'{cyanfun}Digite o nome do arquivo: Padrão {reset}[senhas.csv] > ')
+        else:
+            return
+        with open(b, 'w') as arq:
             for sites in gerenciador:
                 email = gerenciador[sites]['email']
                 senha = gerenciador[sites]['senha']
                 url = gerenciador[sites]['url']
-                arquivo.write('{},{},{},{}\n'.format(sites, email, senha, url))
-        print('Sites Exportados com sucesso')
-
+                arq.write(f'{sites},{email},{senha},{url}\n')
+        print(f'{azul}Sites Exportados com o nome: >>> {b} <<<{reset}')
     except Exception as erro:
-        print('Erro ocorrido...')
-        print(erro)
+        print(f'{verm}Erro {erro}...{reset}')
+    menu()
 
 
-
-def importar_site(nome_arquivo):
+def importar_site():
+    """
+    Faz importação de arquivo csv salvo no formato desejado
+    :return: Retorna o input para o utilizador informar o arquivo csv a ser importado.
+    """
     try:
-        with open(nome_arquivo, 'r') as arquivo:
-            linhas = arquivo.readlines()
+        arquivo = input(f'{cyanfun}Digite o nome do arquivo a ser importado:{reset} ')
+        with open(arquivo, 'r') as arq:
+            linhas = arq.readlines()
             for linha in linhas:
                 detalhes = linha.strip().split(',')
                 nome = detalhes[0]
                 email = detalhes[1]
                 senha = detalhes[2]
                 url = detalhes[3]
+                gerenciador[nome] = {'email': email, 'senha': senha, 'url': url}
+                # print('>>>> Database carregado com sucesso')
+                print(f'{choice(cores)}>>>> {len(gerenciador)} contatos carregados{reset}')
 
-                incluir_editar_site(nome, email, senha, url)
-        print('Sites importados com sucesso...')
     except FileNotFoundError:
-        print('>>> Site não encontrado...')
-    except Exception as erro:
-        print('Algum Erro ocorreu')
-        print(erro)
+        print(f'{verm}>>> Arquivo encontrado...{reset}')
 
+    except Exception as erro:
+        print(f'{verm}Erro: {erro} {reset}')
+    menu()
 
 
 def salvar():
-    exportar_site('senhas.csv')
-
+    exportar_site()
+    menu()
 
 
 def carregar():
+    """
+    Caso o arquivo esteja na pasta, ao rodar o script ele automaticamente carrega.
+    :return: Retorna todos os dados salvos no arquivo 'senhas.csv'.
+    """
     try:
         with open('senhas.csv', 'r') as arquivo:
             linhas = arquivo.readlines()
             for linha in linhas:
                 detalhes = linha.strip().split(',')
-
-                nome = detalhes[0]
+                sites = detalhes[0]
                 email = detalhes[1]
                 senha = detalhes[2]
                 url = detalhes[3]
-
-                gerenciador[nome] = {
-                    'email': email,
-                    'senha': senha,
-                    'url': url
-                }
-        print(choice(cores),'>>>> Database carregado com sucesso...')
-        print(f' >>>> {len(gerenciador)} Sites carregados...', W)
+                gerenciador[sites] = {'email': email, 'senha': senha, 'url': url}
+        print(f'{choice(cores)}>>>> {len(gerenciador)} Sites carregados <<<<{reset}')
 
     except FileNotFoundError:
-        print('Site não encontrado...')
+        print(f'{verm}Arquivo encontrado...{reset}')
+
     except Exception as erro:
-        print('Ocorreu um erro...')
+        print(f'{verm}Ocorreu um erro...{verm}')
         print(erro)
+    menu()
 
 
+def exiting():
+    print(f'{choice(cores)} Saindo...\n\n Deixem os créditos:\n '
+          f'FACEBOOK: https://www.facebook.com/jose.juvenal.00\n GITHUB: https://github.com/juvenalculino\n{reset}')
+    sleep(3)
+    print(f'{choice(cores)} Volte sempre!{reset}')
+    quit()
 
-# INICIO DO PROGRAMA
+
+# def back():
+# menu_action['menu']()
+
+
+# Lista do menu
+menu_action = {
+    'menu': menu,
+    '1': mostrar_site,
+    '2': buscar_site,
+    '3': incluir_editar_site,
+    '4': excluir_site,
+    '5': exportar_site,
+    '6': importar_site,
+    '0': exiting}
 carregar()
-while True:
-    banner()
-    imprimir()
-
-    opcao = input('\033[1;105m''Digite uma opção: ''\033[0m')
-
-    if opcao == '1' or opcao == '01':
-        mostrar_site()
-    elif opcao == '2' or opcao == '02':
-        sites = input('Digite o nome do site: ')
-        buscar_site(sites)
-    elif opcao == '3' or opcao == '03':
-        sites = input('Digite o nome do site: ')
-        if len(sites) <= 2:
-            print('ERRO! Nenhum site foi adicionado.')
-        else:
-            try:
-                rr = gerenciador[sites]
-                print('Site já existente...')
-            except KeyError:
-                email, senha, url = ler_detalhes_site()
-                incluir_editar_site(sites, email, senha, url)
-    elif opcao == '4' or opcao == '04':
-        sites = input('Digite o nome do site: ')
-        try:
-            rr2 = gerenciador[sites]
-            print('>>> Editando sites:', sites)
-            email, senha, url = ler_detalhes_site()
-            incluir_editar_site(sites, email, senha, url)
-        except KeyError:
-            print('>>> Site Inexistente')
-    elif opcao == '5' or opcao == '05':
-        sites = input('Digite o nome do site a excluir: ')
-        if len(sites) == 0:
-            print('ERRO! digite o nome do site')
-        else:
-            excluir_site(sites)
-    elif opcao == '6' or opcao == '06':
-        nome_arquivo = input('Digite o nome do arquivo para ser exportado: ')
-        exportar_site(nome_arquivo)
-    elif opcao == '7' or opcao == '07':
-        nome_arquivo = input('Digite o nome do arquivo a ser importado: ')
-        importar_site(nome_arquivo)
-
-    elif opcao == '0' or opcao == '00':
-        print('Saindo...')
-        sleep(3)
-        break
-    else:
-        print('Opção Inválida...')
+menu()
