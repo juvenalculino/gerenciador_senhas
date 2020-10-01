@@ -1,3 +1,5 @@
+![APM](https://img.shields.io/apm/l/vim-mode?color=green&label=license&logo=mit&logoColor=mit)
+![Badge](https://img.shields.io/static/v1?label=python&message=tools&color=red&flat&logo=PYTHON)
 # Gerenciador de senhas
 *Gerenciador de senhas, sites e emails simples feito em python.*
 
